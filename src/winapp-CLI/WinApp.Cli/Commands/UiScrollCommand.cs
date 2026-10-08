@@ -13,9 +13,15 @@ using WinApp.Cli.Services.InteractiveDesktop;
 
 namespace WinApp.Cli.Commands;
 
-internal class UiScrollCommand : Command, IShortDescription
+internal class UiScrollCommand : Command, IShortDescription, IHelpExamples
 {
     public string ShortDescription => "Scroll a container element";
+
+    public IReadOnlyList<string> Examples { get; } =
+    [
+        "winapp ui scroll <selector> -a <app> --direction down",
+        "winapp ui scroll \"Items\" --type List -a <app> --to bottom",
+    ];
 
     /// <summary>One mouse-wheel detent in WHEEL_DELTA units, the granularity SendInput's wheel expects.</summary>
     private const int WheelDelta = 120;
@@ -44,7 +50,7 @@ internal class UiScrollCommand : Command, IShortDescription
     }
 
     public UiScrollCommand()
-        : base("scroll", "Scroll a container element using ScrollPattern. " +
+        : base("scroll", "Scroll a container element. " +
                "Use --direction to scroll incrementally, --to to jump to top/bottom, or --wheel to synthesize mouse-wheel input.")
     {
         Arguments.Add(SharedUiOptions.SelectorArgument);
