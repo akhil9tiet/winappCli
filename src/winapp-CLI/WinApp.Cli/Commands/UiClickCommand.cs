@@ -39,6 +39,7 @@ internal class UiClickCommand : Command, IShortDescription
         Options.Add(DoubleClickOption);
         Options.Add(RightClickOption);
         Options.Add(WinAppRootCommand.JsonOption);
+        UiQueryOptions.AddTo(this);
     }
 
     public class Handler(
@@ -80,7 +81,7 @@ internal class UiClickCommand : Command, IShortDescription
                 return 1;
             }
 
-            return null;
+            return UiQueryOptions.Validate(parseResult, logger, json);
         }
 
         protected override async Task<int> ExecuteAsync(ParseResult parseResult, IUiTurn turn, CancellationToken cancellationToken)
@@ -96,8 +97,8 @@ internal class UiClickCommand : Command, IShortDescription
             try
             {
                 var uiTarget = await targetResolver.ResolveAsync(app, window, cancellationToken);
-                var selector = selectorParser.Parse(selectorStr);
-                var element = await uiAutomation.FindSingleElementAsync(uiTarget, selector, cancellationToken);
+                var selector = UiQueryOptions.Parse(parseResult, selectorParser, selectorStr);
+                var element = await UiQueryOptions.FindTargetAsync(parseResult, uiAutomation, uiTarget, selector, cancellationToken);
 
                 if (element is null)
                 {
@@ -127,7 +128,8 @@ internal class UiClickCommand : Command, IShortDescription
                     // Re-resolve before anything else so the HWND we foreground and validate is current.
                     var stable = await GestureTargeting.ResolveStableAsync(
                         uiAutomation, uiTarget, selector, element,
-                        GestureTargeting.DefaultMaxReads, GestureTargeting.DefaultReadDelayMs, null, cancellationToken);
+                        GestureTargeting.DefaultMaxReads, GestureTargeting.DefaultReadDelayMs, null, cancellationToken,
+                        requireUnique: UiQueryOptions.HasFilters(parseResult));
                     if (!UiInjectionReporting.TryReport(stable, logger, json, selectorStr, clickType))
                     {
                         return 1;
@@ -158,7 +160,8 @@ internal class UiClickCommand : Command, IShortDescription
                     await Task.Delay(CursorSettleMs, cancellationToken);
 
                     var confirmed = await GestureTargeting.ConfirmStillAsync(
-                        uiAutomation, uiTarget, selector, stable.Element, cancellationToken);
+                        uiAutomation, uiTarget, selector, stable.Element, cancellationToken,
+                        requireUnique: UiQueryOptions.HasFilters(parseResult));
                     if (!UiInjectionReporting.TryReport(confirmed, logger, json, selectorStr, clickType))
                     {
                         return 1;
@@ -198,6 +201,11 @@ internal class UiClickCommand : Command, IShortDescription
                 }
 
                 return 0;
+            }
+            catch (UiAmbiguousSelectorException ex)
+            {
+                UiErrors.AmbiguousSelector(logger, ex.Message, json, parseResult.InvocationConfiguration.Error);
+                return 1;
             }
             catch (System.Runtime.InteropServices.COMException comEx)
             {

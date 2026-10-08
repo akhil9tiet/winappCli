@@ -51,6 +51,7 @@ internal class UiScrollCommand : Command, IShortDescription
         Options.Add(SharedUiOptions.AppOption);
         Options.Add(SharedUiOptions.WindowOption);
         Options.Add(WinAppRootCommand.JsonOption);
+        UiQueryOptions.AddTo(this);
         Options.Add(DirectionOption);
         Options.Add(ToOption);
         Options.Add(WheelOption);
@@ -124,7 +125,7 @@ internal class UiScrollCommand : Command, IShortDescription
                 return 1;
             }
 
-            return null;
+            return UiQueryOptions.Validate(parseResult, logger, json);
         }
 
         protected override async Task<int> ExecuteAsync(ParseResult parseResult, IUiTurn turn, CancellationToken cancellationToken)
@@ -141,8 +142,8 @@ internal class UiScrollCommand : Command, IShortDescription
             try
             {
                 var uiTarget = await targetResolver.ResolveAsync(app, window, cancellationToken);
-                var selector = selectorParser.Parse(selectorStr);
-                var element = await uiAutomation.FindSingleElementAsync(uiTarget, selector, cancellationToken);
+                var selector = UiQueryOptions.Parse(parseResult, selectorParser, selectorStr);
+                var element = await UiQueryOptions.FindTargetAsync(parseResult, uiAutomation, uiTarget, selector, cancellationToken);
 
                 if (element is null)
                 {
@@ -168,7 +169,8 @@ internal class UiScrollCommand : Command, IShortDescription
                     {
                         var stable = await GestureTargeting.ResolveStableAsync(
                             uiAutomation, uiTarget, selector, element,
-                            GestureTargeting.DefaultMaxReads, GestureTargeting.DefaultReadDelayMs, null, cancellationToken);
+                            GestureTargeting.DefaultMaxReads, GestureTargeting.DefaultReadDelayMs, null, cancellationToken,
+                            requireUnique: UiQueryOptions.HasFilters(parseResult));
                         if (!UiInjectionReporting.TryReport(stable, logger, json, selectorStr, "scroll --wheel"))
                         {
                             return 1;
@@ -198,7 +200,8 @@ internal class UiScrollCommand : Command, IShortDescription
                         await Task.Delay(CursorSettleMs, cancellationToken);
 
                         var confirmed = await GestureTargeting.ConfirmStillAsync(
-                            uiAutomation, uiTarget, selector, stable.Element, cancellationToken);
+                            uiAutomation, uiTarget, selector, stable.Element, cancellationToken,
+                            requireUnique: UiQueryOptions.HasFilters(parseResult));
                         if (!UiInjectionReporting.TryReport(confirmed, logger, json, selectorStr, "scroll --wheel"))
                         {
                             return 1;
@@ -240,6 +243,11 @@ internal class UiScrollCommand : Command, IShortDescription
                 }
 
                 return 0;
+            }
+            catch (UiAmbiguousSelectorException ex)
+            {
+                UiErrors.AmbiguousSelector(logger, ex.Message, json, parseResult.InvocationConfiguration.Error);
+                return 1;
             }
             catch (System.Runtime.InteropServices.COMException comEx)
             {
