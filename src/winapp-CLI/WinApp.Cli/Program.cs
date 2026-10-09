@@ -316,7 +316,7 @@ internal static class Program
                 // error, so point at --help instead. A bare "winapp ui" keeps its help: that is
                 // how people discover the commands.
                 parseError.ShowHelp = false;
-                return InvokeWithHelpPointerAsync(parsedArgs);
+                return await InvokeWithHelpPointerAsync(parsedArgs);
             }
 
             // Parse errors must exit non-zero (issue #1015). InvokeAsync displays
