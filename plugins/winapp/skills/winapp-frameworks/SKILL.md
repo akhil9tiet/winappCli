@@ -1,7 +1,10 @@
 ---
 name: winapp-frameworks
-description: Framework-specific Windows development guidance for Electron, .NET (WPF, WinForms), C++, Rust, Flutter, and Tauri. Use when packaging or adding Windows features to an Electron app, .NET desktop app, Flutter app, Tauri app, Rust app, or C++ app.
+description: "Framework-specific Windows steps for Electron, WPF, WinForms, C++, Rust, Flutter, and Tauri: build output, npm scripts, Cargo, CMake, and how winapp fits each. Use when adding Windows features such as toast notifications to one of these apps, or for setup, packaging, or identity work on one."
 ---
+
+**If you can't run `winapp` yourself** (no shell, or the command is denied), give the user the exact `winapp` command(s) for their project instead of only describing the steps.
+
 ## When to use
 
 Use this skill when:
@@ -45,6 +48,7 @@ Windows integration guidance:
 - Use **JS bindings** to call Windows App SDK APIs directly from JavaScript without native addons (for example AI APIs, notifications, and file pickers). Custom WinRT components with .winmd metadata can also be added via `winapp.jsBindings.additionalWinmds` in package.json.
 - Use **native addons** when you need Win32/COM APIs, third-party C++ libraries, or .NET assemblies: `--template cpp` for C++ (node-gyp), or `--template cs` for C#.
 - Mixing JS bindings and native addons in one Electron app is fine.
+- After editing `winapp.jsBindings` in package.json, regenerate with `npx winapp node generate-bindings`. After editing `winapp.yaml`, run `npx winapp restore` first.
 
 Additional Electron guides:
 - [Notification JS bindings guide](https://github.com/microsoft/WinAppCli/blob/main/docs/guides/electron/js-notification.md)
