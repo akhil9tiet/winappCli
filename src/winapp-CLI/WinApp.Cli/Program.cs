@@ -377,7 +377,7 @@ internal static class Program
                 {
                     continue;
                 }
-                if (option.Option is System.CommandLine.HelpOption ||
+                if (option.Option is System.CommandLine.Help.HelpOption ||
                     option.Option == WinAppRootCommand.CliSchemaOption)
                 {
                     return true;
