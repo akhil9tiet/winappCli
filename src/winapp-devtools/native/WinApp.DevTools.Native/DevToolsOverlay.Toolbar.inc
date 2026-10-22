@@ -570,10 +570,12 @@ static std::string DefaultMode()
 }
 
 // "When the app starts" is a view of that setting: Show toolbar is on, Hide toolbar is headless, Don't start is off.
+// The re-enable hint under the radios is only visible while "off" is the selected mode (issue #1148).
 static void SetStartModeUi(const std::string& mode)
 {
     const wchar_t* name = mode == "headless" ? L"DevToolsStartHidden" : mode == "off" ? L"DevToolsStartOff" : L"DevToolsStartShown";
     ProtoSetToggle(name, L"", L"", true);
+    ProtoSetPartVisible(L"DevToolsStartOffHint", mode == "off");
 }
 
 static void OnMoreMenuClick(void*, void*)
@@ -717,7 +719,7 @@ static void OnDragHandlePressed(void*, void*)
     g_dragOffX = (double)dx - ChipX();
     g_dragOffY = (double)dy - ChipY();
     if (g_dragOffX < 0.0 || g_dragOffX > g_chipW) g_dragOffX = g_chipW / 2.0;
-    if (g_dragOffY < 0.0 || g_dragOffY > (double)kChipH) g_dragOffY = (double)kChipH / 2.0;
+    if (g_dragOffY < 0.0 || g_dragOffY > (double)kChipH) g_dragOffY = g_chipH / 2.0;
     g_dragNear = g_corner;
     ShowSnapTargets(true);
     HighlightSnapTarget(g_dragNear);
