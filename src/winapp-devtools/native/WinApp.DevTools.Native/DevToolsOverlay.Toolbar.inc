@@ -719,7 +719,7 @@ static void OnDragHandlePressed(void*, void*)
     g_dragOffX = (double)dx - ChipX();
     g_dragOffY = (double)dy - ChipY();
     if (g_dragOffX < 0.0 || g_dragOffX > g_chipW) g_dragOffX = g_chipW / 2.0;
-    if (g_dragOffY < 0.0 || g_dragOffY > (double)kChipH) g_dragOffY = g_chipH / 2.0;
+    if (g_dragOffY < 0.0 || g_dragOffY > (double)kChipH) g_dragOffY = (double)kChipH / 2.0;
     g_dragNear = g_corner;
     ShowSnapTargets(true);
     HighlightSnapTarget(g_dragNear);
