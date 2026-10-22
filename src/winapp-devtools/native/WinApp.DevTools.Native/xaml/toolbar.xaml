@@ -1,4 +1,3 @@
-
 <!-- Opposite Light/Dark theme keeps chrome distinct; High Contrast inherits platform resources. Attach/reveal
      animations are one-shot, not continuous work in the inspected app. -->
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -285,8 +284,7 @@
               </VisualState>
               <VisualState x:Name="Unchecked" />
               <VisualState x:Name="Indeterminate" />
-            </VisualStateGroup>
-          </VisualStateManager.VisualStateGroups>
+            </VisualStateManager.VisualStateGroups>
           <Ellipse x:Name="Dot" Width="6" Height="6" Opacity="0" Fill="{TemplateBinding Foreground}"
                    HorizontalAlignment="Center" VerticalAlignment="Center" />
           <ContentPresenter Grid.Column="1" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"
@@ -341,5 +339,11 @@
               HorizontalAlignment="Stretch" Background="#00000000" Foreground="$TEXT$" Content="Don't start DevTools"
               ToolTipService.ToolTip="Turn DevTools back on with: winapp config set run.devtools on"
               AutomationProperties.AutomationId="DevToolsStartOff" />
+      <!-- Visible only while "Don't start DevTools" is the selected start mode: the re-enable hint must not
+           hide in a tooltip, or a user who picks it has no visible way back (issue #1148). -->
+      <TextBlock x:Name="DevToolsStartOffHint" Visibility="Collapsed" Margin="32,0,10,8" FontSize="11"
+                 Foreground="$TEXTDIM$" TextWrapping="WrapWholeWords"
+                 Text="DevTools is off. To turn it back on, run `winapp config set run.devtools on`, or launch with `winapp run . --devtools on`."
+                 AutomationProperties.AutomationId="DevToolsStartOffHint" />
     </StackPanel>
   </Border></Canvas>
