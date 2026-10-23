@@ -334,7 +334,7 @@ static void TestToolbarContract()
                      window.find("DevToolsPutFontSize(ctb, 13);") == std::string::npos,
                  "tree rows use the compact 12-DIP caption size");
     Check(windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") != std::string::npos &&
-                     windowShell.find("Glyph=\"&#xE706;\"") != std::string::npos &&
+                     windowShell.find("Glyph=\"&#xE943;\"") != std::string::npos &&
                      windowShell.find("ToolTipService.ToolTip=\"{Binding Text, ElementName=JmxLbl}\"") != std::string::npos &&
                      windowShell.find("<TextBox x:Name=\"TreeFilter\"") < windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") &&
                      windowShell.find("Grid.Row=\"1\" Margin=\"8,8,8,4\" ColumnSpacing=\"8\"") != std::string::npos &&
@@ -375,12 +375,12 @@ static void TestToolbarContract()
                      windowShell.find("<TextBox x:Name=\"TreeFilter\"") >
                          windowShell.find("<Grid x:Name=\"TreeControls\"") &&
                      windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") >
-                         windowShell.find("<Grid x:Name=\"TreeControls\"")),
+                         windowShell.find("<Grid x:Name=\"TreeControls\""),
                  "Pick, Track focus, the filter and Just my XAML all live inside the one tree-scoped row");
     Check(windowShell.find("AutomationProperties.AutomationId=\"PickElementToggle\"") <
                      windowShell.find("<TextBox x:Name=\"TreeFilter\"") &&
                      windowShell.find("AutomationProperties.AutomationId=\"FocusTrackingToggle\"") <
-                         windowShell.find("<TextBox x:Name=\"TreeFilter\"")),
+                         windowShell.find("<TextBox x:Name=\"TreeFilter\""),
                  "the inspector's actions still lead that row (they used to lead a strip of their own)");
     Check(window.find("if (g_treeControlsUi)   DevToolsPutVisibility(g_treeControlsUi, on ? 1 : 0);") != std::string::npos &&
                      window.find("grabUi(L\"TreeControls\", &g_treeControlsUi);") != std::string::npos &&
@@ -392,7 +392,7 @@ static void TestToolbarContract()
         const size_t pickedAt = window.find("bool DevToolsWindow_OnPicked(");
         const size_t pickedEnd = window.find("\n}", pickedAt);
         const std::string picked = (pickedAt == std::string::npos) ? std::string()
-                                                                 : window.substr(pickedAt, pickedEnd - pickedAt);
+                                                                   : window.substr(pickedAt, pickedEnd - pickedAt);
         Check(picked.find("SetCommentsView(false);") != std::string::npos,
                      "a committed pick switches to the Visual tree tab");
         const size_t selectAt = window.find("static void SelectNodeByWire(InstanceHandle wire");
