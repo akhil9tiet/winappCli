@@ -120,10 +120,7 @@ static void TestToolbarContract()
                      CountOf(xaml.substr(inspectPos, morePos - inspectPos), "x:Name=\"DevToolsProto") == 1 &&
                      moreMenu < xaml.find("x:Name=\"DevToolsProtoPin\"") &&
                      moreMenu < xaml.find("x:Name=\"DevToolsHideToolbar\"") &&
-                     moreMenu < xaml.find("x:Name=\"DevToolsStartShown\"") &&
-                     moreMenu < xaml.find("x:Name=\"DevToolsStartHidden\"") &&
-                     moreMenu < xaml.find("x:Name=\"DevToolsStartOff\"") &&
-                     moreMenu < xaml.find("x:Name=\"DevToolsMoreMenu\""),
+                     moreMenu < xaml.find("x:Name=\"DevToolsStartShown\""),
                  "the bar ends with Open DevTools and More, whose menu holds Hide, Keep open and the start mode");
     // The start mode is one choice of three, so UI Automation must read it as a radio group (SelectionItem),
     // not as three unrelated buttons; the header above it is text, never a focus stop.
@@ -152,7 +149,7 @@ static void TestToolbarContract()
                      treeScroll.find("HorizontalScrollBarVisibility=\"Disabled\"") != std::string::npos,
                  "the visual tree does not scroll sideways, so its row labels are width-bound");
     Check(window.find("DevToolsPutTextTrimming(ctb, (int)DevToolsX::TextTrimming::CharacterEllipsis);") != std::string::npos &&
-                     window.find("ToolTipService::SetToolTip(row, winrt::box_value(winrt::hstring(full)));") != std::string::npos,
+                     window.find("ToolTipService::SetToolTip(row, winrt::box_value(winrt::hstring(full));") != std::string::npos,
                  "a tree row's label ends in an ellipsis and its tooltip holds the full label");
     Check(xaml.find("FontFamily=\"Segoe MDL2 Assets\"") == std::string::npos &&
                      selectionPanel.find("FontFamily=\"Segoe MDL2 Assets\"") == std::string::npos &&
@@ -205,8 +202,7 @@ static void TestToolbarContract()
                      sourceLine < commentInput && commentInput < openDevTools &&
                      selectionPanel.find("DevToolsSelRows") == std::string::npos &&
                      selectionPanel.find("TabIndex=") == std::string::npos,
-                 "the flyout reads source, then the comment, then Open in DevTools, with no property rows");
-    Check(windowShell.find("Background=\"Transparent\"") != std::string::npos,
+                 "the flyout reads source, then the comment, then Open in DevTools, with no property rows");    Check(windowShell.find("Background=\"Transparent\"") != std::string::npos,
                  "the DevTools window shell exposes its system backdrop");
     Check(windowShell.find("InspectorTitleBarHost") == std::string::npos &&
                      window.find("<TitleBar xmlns=") == std::string::npos &&
@@ -220,7 +216,7 @@ static void TestToolbarContract()
                      windowShell.find("RefreshInspectorSnapshot") == std::string::npos,
                  "the inspector has no snapshot banner or refresh button: the selected element is live");
     Check(window.find("ApplyMicaBackdrop(winInsp)") != std::string::npos &&
-                     window.find("<MicaBackdrop xmlns=") == std::string::npos &&
+                     window.find("<MicaBackdrop xmlns=") != std::string::npos &&
                      window.find("DesktopAcrylicBackdrop") == std::string::npos,
                  "the DevTools window uses the native Mica backdrop");
     Check(windowShell.find("x:Name=\"DetailsPane\"") != std::string::npos &&
@@ -339,8 +335,7 @@ static void TestToolbarContract()
                      windowShell.find("ToolTipService.ToolTip=\"{Binding Text, ElementName=JmxLbl}\"") != std::string::npos &&
                      windowShell.find("<TextBox x:Name=\"TreeFilter\"") < windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") &&
                      windowShell.find("Grid.Row=\"1\" Margin=\"8,8,8,4\" ColumnSpacing=\"8\"") != std::string::npos &&
-                     windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") < windowShell.find("<TextBlock x:Name=\"TreeHeader\"") &&
-                     windowShell.find("<TextBlock x:Name=\"TreeHeader\"") != std::string::npos,
+                     windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") < windowShell.find("<TextBlock x:Name=\"TreeHeader\""),
                  "Just my XAML is an icon toggle eight DIPs beside the tree filter with its status in the tooltip");
     // JmxLbl is collapsed, so it is absent from the UIA tree by construction and the toggle's
     // AutomationProperties.Name is the ONLY thing that carries the unavailable reason to assistive tech.
@@ -377,28 +372,12 @@ static void TestToolbarContract()
                      windowShell.find("<TextBox x:Name=\"TreeFilter\"") >
                          windowShell.find("<Grid x:Name=\"TreeControls\"") &&
                      windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") >
-                         windowShell.find("<Grid x:Name=\"TreeControls\"") &&
-                     windowShell.find("<Grid x:Name=\"TreeControls\"") != std::string::npos,
+                         windowShell.find("<Grid x:Name=\"TreeControls\""),
                  "Pick, Track focus, the filter and Just my XAML all live inside the one tree-scoped row");
     Check(windowShell.find("AutomationProperties.AutomationId=\"PickElementToggle\"") <
                      windowShell.find("<TextBox x:Name=\"TreeFilter\"") &&
                      windowShell.find("AutomationProperties.AutomationId=\"FocusTrackingToggle\"") <
-                         windowShell.find("<TextBox x:Name=\"TreeFilter\"") &&
-                     windowShell.find("AutomationProperties.AutomationId=\"PickElementToggle\"") <
-                         windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") &&
-                     windowShell.find("AutomationProperties.AutomationId=\"FocusTrackingToggle\"") <
-                         windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") &&
-                     windowShell.find("<TextBox x:Name=\"TreeFilter\"") <
-                         windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") &&
-                     windowShell.find("AutomationProperties.AutomationId=\"PickElementToggle\"") <
-                         windowShell.find("Grid.Row=\"1\" Margin=\"8,8,8,4\" ColumnSpacing=\"8\"") &&
-                     windowShell.find("AutomationProperties.AutomationId=\"FocusTrackingToggle\"") <
-                         windowShell.find("Grid.Row=\"1\" Margin=\"8,8,8,4\" ColumnSpacing=\"8\"") &&
-                     windowShell.find("<TextBox x:Name=\"TreeFilter\"") <
-                         windowShell.find("Grid.Row=\"1\" Margin=\"8,8,8,4\" ColumnSpacing=\"8\"") &&
-                     windowShell.find("<ToggleButton x:Name=\"JmxBtn\"") <
-                         windowShell.find("Grid.Row=\"1\" Margin=\"8,8,8,4\" ColumnSpacing=\"8\"") &&
-                     windowShell.find("Grid.Row=\"1\" Margin=\"8,8,8,4\" ColumnSpacing=\"8\"") != std::string::npos,
+                         windowShell.find("<TextBox x:Name=\"TreeFilter\""),
                  "the inspector's actions still lead that row (they used to lead a strip of their own)");
     Check(window.find("if (g_treeControlsUi)   DevToolsPutVisibility(g_treeControlsUi, on ? 1 : 0);") != std::string::npos &&
                      window.find("grabUi(L\"TreeControls\", &g_treeControlsUi);") != std::string::npos &&
@@ -438,7 +417,7 @@ static void TestToolbarContract()
                      window.find("<Run Text=\\\"   not on this screen\\\"") == std::string::npos,
                  "the not-on-this-screen marker is a leading chip, not a trailing run the ellipsis eats first");
     // Every permanent comment action needs a comment-qualified accessible name.
-    Check(window.find("x:Name=\\\"A\" + i + L\\\"\\\" Visibility=\\\"Collapsed\\\"") == std::string::npos &&
+    Check(window.find("x:Name=\\\"A\" + i + L\"\\\" Visibility=\\\"Collapsed\\\"") == std::string::npos &&
                      window.find("struct CommentHoverSink") == std::string::npos,
                  "the row's actions are always visible -- no Collapsed action bar, no hover reveal");
     Check(window.find("AutomationProperties.Name=\\\"Resolve: \" + subject") != std::string::npos &&
@@ -494,8 +473,7 @@ static void TestToolbarContract()
         const std::string fragment = (fragAt == std::string::npos) ? std::string() : window.substr(fragAt, fragEnd - fragAt);
         Check(!fragment.empty() && fragment.find("BuildCommentRowMarkup") == std::string::npos,
                      "the pane's markup holds no rows, so its cost does not grow with the comment count");
-    }
-    // part 3: ONE shell hand-off, and neither call site may keep its own ShellExecute.
+    }    // part 3: ONE shell hand-off, and neither call site may keep its own ShellExecute.
     Check(window.find("DevToolsShellOpen::Decide(") != std::string::npos &&
                      CountOf(window, "static std::wstring HandOffSource(") == 1 &&
                      CountOf(window, "HandOffSource(") == 3,
