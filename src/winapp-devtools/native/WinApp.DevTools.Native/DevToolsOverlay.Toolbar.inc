@@ -605,7 +605,9 @@ static void SetDefaultMode(const char* mode)
 }
 static void OnStartShownClick(void*, void*) { SetDefaultMode("on"); }
 static void OnStartHiddenClick(void*, void*) { SetDefaultMode("headless"); }
-static void OnStartOffClick(void*, void*) { SetDefaultMode("off"); }
+// The off choice leaves a re-enable hint in the More menu, so the menu must stay open to show it:
+// SetDefaultMode closes the menu first, then this reopens it (re-measured for the added hint text).
+static void OnStartOffClick(void*, void*) { SetDefaultMode("off"); ToggleToolbarMenu(L"DevToolsMoreMenu", L"DevToolsProtoMore", L"DevToolsStartOff"); }
 static std::wstring ChipSurfaceLabel()
 {
     const std::vector<DevToolsSurface>& all = DevToolsOverlay_AllSurfaces();
