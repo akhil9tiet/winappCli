@@ -149,7 +149,7 @@ static void TestToolbarContract()
                      treeScroll.find("HorizontalScrollBarVisibility=\"Disabled\"") != std::string::npos,
                  "the visual tree does not scroll sideways, so its row labels are width-bound");
     Check(window.find("DevToolsPutTextTrimming(ctb, (int)DevToolsX::TextTrimming::CharacterEllipsis);") != std::string::npos &&
-                     window.find("ToolTipService::SetToolTip(row, winrt::box_value(winrt::hstring(full));)") != std::string::npos,
+                     window.find("ToolTipService::SetToolTip(row, winrt::box_value(winrt::hstring(full)));") != std::string::npos,
                  "a tree row's label ends in an ellipsis and its tooltip holds the full label");
     Check(xaml.find("FontFamily=\"Segoe MDL2 Assets\"") == std::string::npos &&
                      selectionPanel.find("FontFamily=\"Segoe MDL2 Assets\"") == std::string::npos &&
